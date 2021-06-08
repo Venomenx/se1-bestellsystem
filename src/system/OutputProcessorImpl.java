@@ -31,33 +31,41 @@ final class OutputProcessorImpl implements Components.OutputProcessor{
 		StringBuffer sbAllOrders = new StringBuffer( "-------------" );
 		StringBuffer sbLineItem = new StringBuffer();
 		long priceTotal = 0;
+		long vatPriceTotal = 0;
 		for(Order o : orders) {
 			long pricePerCostumer = 0;
 			Customer customer = o.getCustomer();
 			String customerName = splitName( customer, customer.getFirstName()+ " " + customer.getLastName() );
-			String tmp = String.format("#%d, %s's Bestellung: ", o.getId(), customerName);
+			String tmpLeftSide = String.format("#%d, %s's Bestellung: ", o.getId(), customerName);
 			int count = 0;
 			for(OrderItem i: o.getItems()) {
 				if (count != 0) {
-					tmp += ", ";
+					tmpLeftSide += ", ";
 				}
 				count++;
-				tmp = tmp + String.format("%dx %s", i.getUnitsOrdered(), i.getDescription());
+				tmpLeftSide = tmpLeftSide + String.format("%dx %s", i.getUnitsOrdered(), i.getDescription());
 				pricePerCostumer += i.getArticle().getUnitPrice() * i.getUnitsOrdered();
 			}
 			priceTotal += pricePerCostumer;
+			vatPriceTotal += orderProcessor.vat(pricePerCostumer);
 			String fmtPrice = fmtPrice( pricePerCostumer, "EUR");
-			sbLineItem = fmtLine( tmp, fmtPrice, printLineWidth);
+			sbLineItem = fmtLine( tmpLeftSide, fmtPrice, printLineWidth);
 			sbAllOrders.append( "\n" );
 			sbAllOrders.append(sbLineItem);
 		}
 		String fmtPriceTotal = fmtPrice( priceTotal, "EUR");
+		String fmtVatPrice = fmtPrice( vatPriceTotal, "EUR");
 		sbAllOrders.append( "\n" )
 		.append( fmtLine( "-------------", "-------------", printLineWidth ) )
 		.append( "\n" )
 		.append( fmtLine( "Gesamtwert aller Bestellungen:", fmtPriceTotal, printLineWidth ) );
+		if(printVAT) {
+			sbAllOrders.append("\n")
+			.append( fmtLine( "Im Gesamtbetrag enthaltene Mehrwertsteuer (19%):" , fmtVatPrice, printLineWidth));			
+		}
 		System.out.println( sbAllOrders.toString() );
 	}
+	
 	
 	public void printInventory() { 
 	}
@@ -135,12 +143,14 @@ final class OutputProcessorImpl implements Components.OutputProcessor{
 		if(name.contains(",")) { 
 			lastName = name.substring(0, name.indexOf(","));
 			firstName = name.substring(name.lastIndexOf(",")+1);
+			customer.setFirstName(firstName.substring(firstName.indexOf(" ")+1));
+			customer.setLastName(lastName);
 		} else {
 			lastName = name.substring(name.lastIndexOf(" ")+1);
 			firstName = name.substring(0, name.lastIndexOf(" "));
+			customer.setFirstName(firstName);
+			customer.setLastName(lastName);
 		}
-		customer.setFirstName(firstName.substring(firstName.indexOf(" ")+1));
-		customer.setLastName(lastName);
 		return singleName(customer);
 	}
 
