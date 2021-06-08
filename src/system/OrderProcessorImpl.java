@@ -6,6 +6,8 @@ import system.Components.OrderProcessor;
 
 final class OrderProcessorImpl implements OrderProcessor{
 	protected final InventoryManager inventoryManager;
+	protected static int rateIndex1 = 19;
+	protected static int rateIndex2 = 7;
 	
 	public OrderProcessorImpl(InventoryManager inventoryManager) {
 		this.inventoryManager = inventoryManager;
@@ -25,14 +27,23 @@ final class OrderProcessorImpl implements OrderProcessor{
 
 	@Override
 	public long vat(long grossValue) {
-		// TODO Auto-generated method stub
-		return 0;
+		long netto = (long) (grossValue / 1.19 * 0.19);
+		return netto;
 	}
 
 	@Override
 	public long vat(long grossValue, int rateIndex) {
-		// TODO Auto-generated method stub
-		return 0;
+		double factor = 1;
+		double quot = 0;
+		if( rateIndex == 1 ) {
+			quot = rateIndex1 / 100;
+			factor = grossValue / (( 1 + quot) * quot);
+		} else if( rateIndex ==2 ) {
+			quot = rateIndex2 / 100;
+			factor = grossValue / (( 1 + quot) * quot);
+		}
+		long netto = (long) (grossValue * factor);
+		return netto;
 	}
 
 }
