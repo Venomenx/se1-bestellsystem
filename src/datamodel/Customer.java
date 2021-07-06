@@ -18,6 +18,9 @@ public class Customer {
 	}
 	
 	public String getFirstName() {
+		if(firstName == null) {
+			firstName = "";
+		}
 		return firstName;
 	}
 	
@@ -26,6 +29,9 @@ public class Customer {
 	}
 	
 	public String getLastName() {
+		if(lastName == null) {
+			lastName = "";
+		}
 		return lastName;
 	}
 	
@@ -35,6 +41,9 @@ public class Customer {
 	
 	
 	public String getContact () {
+		if(contact == null) {
+			contact = "";
+		}
 		return contact;
 	}
 	

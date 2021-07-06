@@ -21,6 +21,9 @@ public class Article {
 	}
 
 	public String getDescription() {
+		if (description == null) {
+			description = "";
+		}
 		return description;
 	}
 
@@ -29,18 +32,30 @@ public class Article {
 	}
 
 	public long getUnitPrice() {
+		if(unitPrice < 0) {
+			unitPrice = 0;
+		}
 		return unitPrice;
 	}
 
 	public void setUnitPrice(long unitPrice) {
+		if(unitPrice == Long.MAX_VALUE || unitPrice == Long.MIN_VALUE || unitPrice < 0) {
+			unitPrice = 0;
+		}
 		this.unitPrice = unitPrice;
 	}
 
 	public int getUnitsInStore() {
+		if(unitsInStore < 0) {
+			unitsInStore = 0;
+		}
 		return unitsInStore;
 	}
 
 	public void setUnitsInStore(int unitsInStore) {
+		if(unitsInStore == Integer.MAX_VALUE || unitsInStore == Integer.MIN_VALUE || unitsInStore < 0) {
+			unitsInStore = 0;
+		}
 		this.unitsInStore = unitsInStore;
 	}
 
